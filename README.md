@@ -1,19 +1,26 @@
 # ChatGPT Deep Research Connector Example
 
-This project is an example implementation of a [ChatGPT Deep Research Connector](https://platform.openai.com/docs/mcp), demonstrating the `search` and `fetch` functions. While internal OpenAI connectors may offer more functionalities, custom connectors are currently limited to these two operations.
+This project is an example implementation of a [ChatGPT Deep Research Connector](https://platform.openai.com/docs/mcp), demonstrates how custom data sources, like internal sales lists or financial documents, could be integrated into ChatGPT Deep Research.
+
+This project currently implements two functions: `search` and `fetch`. Some internal OpenAI connectors may offer more functionalities, but custom connectors are currently limited to these two operations. 
+
+Below is an example of what Deep Research with a Custom Connector looks like:
+
+![Deep Research with Custom Connector](docs/image.png)
 
 ## Features
 
 - Implements `search` and `fetch` for the ChatGPT Deep Research Connector.
 - Uses [Auth.js (formerly NextAuth.js v5)](https://authjs.dev) for authentication.
-- Incorporates `@node-oauth/oauth2-server` for OAuth 2.0 server capabilities.
+- Incorporates `@node-oauth/oauth2-server` for OAuth 2.0 server functionality.
 - Includes custom server-side authentication logic for dynamic client registration.
 
 ## Important Considerations
 
-- **OAuth Implementation**: This project utilizes a custom OAuth setup due to issues with the standard MCP OAuth server implementation. 
+- **OAuth Implementation**: This project utilizes a custom OAuth setup due to various issues with the standard MCP OAuth server implementation. 
 - **Production Use**: The custom authentication code has not been extensively vetted. **Use this project in a production environment at your own risk.** Thorough review and testing are strongly advised.
 - **ChatGPT Connector UI**: Be aware of potential bugs in the ChatGPT UI when adding custom connectors. After adding a connector, you might be redirected to a callback URL (e.g., `https://chatgpt.com/backend-api/aip/connectors/links/oauth/callback?...`) and experience a hang for approximately 30 seconds. You may have to go through the add connector flow once or twice before the connector functions correctly. Additionally, ChatGPT might display an error message stating, "This MCP server doesn't implement our specification." This is a known issue with the current ChatGPT connector interface and can typically be ignored if the connector otherwise functions as expected.
+- **Feature Availability**: Custom Connectors are not available on ChatGPT free or Plus plans, or in EEA, Switzerland, and the UK.
 
 ## Usage
 
@@ -46,11 +53,11 @@ AUTH_GOOGLE_SECRET=
 DATABASE_URL=
 ```
 
-**Recommendations:**
-- For `DATABASE_URL`, consider using a service like [Supabase](https://supabase.com).
-- For `REDIS_URL`, when deploying to Vercel, you can use [Vercel KV (Redis)](https://vercel.com/storage/kv) or [Upstash](https://upstash.com).
+**Recommendations**:
+- For a managed PostgreSQL instance (`DATABASE_URL`), consider [Supabase](https://supabase.com).
+- For Redis hosting (`REDIS_URL`), consider [Vercel KV](https://vercel.com/storage/kv) or [Upstash](https://upstash.com).
 
-For local development, if you have Docker installed, you can often run a local Redis instance using the local `docker-compose.yaml` file with the command:
+Locally, use Docker to start Redis quickly:
 ```sh
 docker-compose up -d
 ```
@@ -64,3 +71,17 @@ npm run inspector
 ```
 
 This will start the inspector tool. To connect to your local server, use the endpoint `http://localhost:3000/api/sse` in the inspector. This allows you to send requests to your local MCP server endpoints.
+
+You can remove the OAuth authentication code from `app/api/[transport]/route.ts` if you want to try the MCP in OpenAI's playground, but playground currently doesn't support OAuth authentication for MCPs. https://platform.openai.com/playground/prompts. Alternatively, grab your bearer token from devtools after a successful OAuth flow and use that in the Authorization header of the OpenAI playground.
+
+
+## How to add Custom Connector to ChatGPT
+
+1. Open ChatGPT.
+2. Click "Tools" under the input field.
+3. Select "Run Deep Research".
+4. Choose "Add Sources" and click "Connect More".
+5. Click "Create" next to "Browse Connectors".
+6. Fill out the connector's details: provide name, description, and MCP Server URL (from your Vercel deployment or locally via ngrok/tailscale).
+7. Select "OAuth Authentication", toggle "I trust this application", and click "Create".
+8. Complete the OAuth flow to integrate the connector into your ChatGPT environment.
