@@ -1,3 +1,14 @@
+# ⚡️ Five-Minute Quickstart
+
+**Just want to get rolling fast?**  
+Skip the boilerplate and use **mcpauth** as a plug-and-play library.
+
+👉 https://github.com/mcpauth/mcpauth/
+
+Install, configure, and you’re ready in about five minutes.
+
+---
+
 # ChatGPT Deep Research Connector Example
 
 This project is an example implementation of a [ChatGPT Deep Research Connector](https://platform.openai.com/docs/mcp), demonstrates how custom data sources, like internal sales lists or financial documents, could be integrated into ChatGPT Deep Research.
